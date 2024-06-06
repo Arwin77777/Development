@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Login App</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        a {
+            color: #007BFF;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        #logout {
+            cursor: pointer;
+            color: red;
+        }
+    </style>
+</head>
+
+<body style="text-align: center;">
+    <h1>Home</h1>
+    <a href="update.html">Update User</a>
+    <a id="logout">Logout</a>
+    <script>
+        const token = localStorage.getItem('token');
+        if (!token) {
+            window.location.href = '/client/signup.html';
+        }
+
+        document.getElementById('logout').addEventListener('click', function () {
+            localStorage.removeItem('token');
+            window.location.href = '/client/login.html';
+        });
+    </script>
+</body>
+
+</html>
