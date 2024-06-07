@@ -94,13 +94,13 @@ const EditUser = () => {
 
     useEffect(() => {
         if (!isLoggedIn) {
-            navigate('/login');
+            navigate('/');
         }
     }, [isLoggedIn, navigate]);
 
     const handleLogout = () => {
         localStorage.removeItem('token');
-        navigate('/login');
+        navigate('/');
     };
 
     return (

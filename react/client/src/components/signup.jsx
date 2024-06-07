@@ -135,7 +135,7 @@ function Signup() {
                 size="lg"
                 checked={user.role === 'admin'} 
               />
-              <Link to='/login'>Existing User?</Link>
+              <Link to='/'>Existing User?</Link>
               <br />
               <MDBBtn size='lg' onClick={handleSubmit}>
                 Signup
