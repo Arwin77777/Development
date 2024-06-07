@@ -4,7 +4,7 @@ const User = require('./user');
 
 module.exports = function(app) {
     app.post('/signup', async (req, res) => {
-        const { name, email, password, age } = req.body;
+        const { name, email, password, age, role } = req.body;
     
         if (!name || !email || !password || !age) {
             return res.status(400).json({ error: 'All fields are required' });
@@ -16,9 +16,9 @@ module.exports = function(app) {
                 return res.status(400).json({ error: 'User already exists with this email' });
             }
             const hashedPassword = await bcrypt.hash(password, 10);
-            const user = new User({ name, email, password: hashedPassword, age });
+            const user = new User({ name, email, password: hashedPassword, age, role });
             await user.save();
-            const token = jwt.sign({ id: user._id, username: user.name }, "uwhi827", { expiresIn: '1h' });
+            const token = jwt.sign({ id: user._id, username: user.name ,role:user.role}, "uwhi827", { expiresIn: '1h' });
             res.status(201).json({ message: 'User created successfully', token });
         } catch (error) {
             res.status(500).json({ error: 'Error creating user ' + error });
@@ -33,8 +33,8 @@ module.exports = function(app) {
         }
     
         if (user && await bcrypt.compare(password, user.password)) {
-            const token = jwt.sign({ id: user._id, username: user.name }, "uwhi827", { expiresIn: '1h' });
-            res.status(200).json({ email: user.email, token });
+            const token = jwt.sign({ id: user._id, username: user.name, role: user.role }, "uwhi827", { expiresIn: '1h' });
+            res.status(200).json({ email: user.email, token, role: user.role });
         } else {
             res.status(400).json({ error: 'Invalid credentials' });
         }
@@ -77,6 +77,23 @@ module.exports = function(app) {
             res.status(200).json(user);
         } catch (error) {
             res.status(500).json({ error: "Error fetching user: " + error.message });
+        }
+    })
+
+    app.get('/getAllUsers', async (req, res) => {
+        try {
+            const token = req.headers.authorization.split(' ')[1];
+            const decoded = jwt.verify(token, "uwhi827");
+            const userId = decoded.id;
+            const user = await User.findById(userId);
+            if (user.role === 'admin') {
+                const users = await User.find({});
+                res.status(200).json(users);
+            } else {
+                res.status(401).json({ error: "Unauthorized access" });
+            }
+        } catch (error) {
+            res.status(500).json({ error: "Error fetching users: " + error.message });
         }
     })
     

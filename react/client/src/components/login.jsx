@@ -24,11 +24,22 @@ function Login() {
       password: password
     }).then((res) => {
       localStorage.setItem('token', res.data.token); 
-      navigate('/');
+      if(res.data.role === 'admin'){
+        navigate('/dashboard');
+      }
+      else{
+        navigate('/editUser');
+      }
     }).catch((err) => {
       console.error(err);
       if (err.response && err.response.data && err.response.data.error) {
-        setError(err.response.data.error);
+        if (err.response.data.error === 'Invalid credentials') {
+          setError('Password is incorrect.');
+        } else if (err.response.data.error === 'User not found') {
+          setError('No account found with this email.');
+        } else {
+          setError(err.response.data.error);
+        }
       } else {
         setError('Failed to login. Please try again.');
       }
