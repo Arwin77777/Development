@@ -11,18 +11,26 @@ import {
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Popup from './toast';
-import { jwtDecode } from 'jwt-decode';
+import {jwtDecode} from 'jwt-decode';
+import { useDispatch, useSelector } from 'react-redux';
 
 const EditUser = () => {
     const [user, setUser] = useState({ name: '', email: '', age: '', password: '' });
     const [error, setError] = useState('');
     const [inputErrors, setInputErrors] = useState({});
     const [showPopup, setShowPopup] = useState(false);
-    const token = localStorage.getItem('token');
     const navigate = useNavigate();
     const [isAdmin, setIsAdmin] = useState(false);
+    const token = useSelector((state) => state.auth.token); 
+    // const token = localStorage.getItem('token');
+    const dispatch = useDispatch();
 
     useEffect(() => {
+        if (!token) {
+            navigate('/');
+            return;
+        }
+
         axios.get(`http://localhost:5000/getUser`, {
             headers: {
                 'Content-Type': 'application/json',
@@ -40,7 +48,7 @@ const EditUser = () => {
             setIsAdmin(decodedToken.role === 'admin');
         })
         .catch(err => console.log(err));
-    }, [token]);
+    }, [token, navigate]);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -90,16 +98,9 @@ const EditUser = () => {
         });
     };
 
-    const isLoggedIn = localStorage.getItem('token');
-
-    useEffect(() => {
-        if (!isLoggedIn) {
-            navigate('/');
-        }
-    }, [isLoggedIn, navigate]);
-
     const handleLogout = () => {
-        localStorage.removeItem('token');
+        // localStorage.removeItem('token');
+        token && dispatch({ type: 'REMOVE_TOKEN' });
         navigate('/');
     };
 

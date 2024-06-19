@@ -1,7 +1,6 @@
 import './App.css';
 import Login from './components/login.jsx'
 import 'mdb-react-ui-kit/dist/css/mdb.min.css';
-import 'bootstrap/dist/css/bootstrap.min.css';
 import "@fortawesome/fontawesome-free/css/all.min.css";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Signup from './components/signup.jsx';
@@ -16,7 +15,6 @@ function App() {
     <div className="App">
       <BrowserRouter>
         <Routes>
-          {/* <Route path='/' element={<Home></Home>}></Route> */}
           <Route path='/' element={<Login></Login>}></Route>
           <Route path='/signup' element={<Signup></Signup>}></Route>
           <Route path='/editUser' element={<EditUser></EditUser>}></Route>
@@ -24,6 +22,7 @@ function App() {
           <Route path='/toast' element={<Popup></Popup>}></Route>
         </Routes>
       </BrowserRouter>
+      {/* <Hooks></Hooks> */}
     </div>
   );
 }

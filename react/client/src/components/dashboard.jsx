@@ -3,12 +3,15 @@ import React, { useEffect, useState } from 'react';
 import '../css/dashboard.css'; // Import the CSS file for styling
 import { Link, useNavigate } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
+import { useDispatch, useSelector } from 'react-redux';
 
 const Dashboard = () => {
     const navigate = useNavigate();
     const [users, setUsers] = useState([]);
-    const token = localStorage.getItem('token');
+    // const token = localStorage.getItem('token');
+    const token = useSelector((state) => state.auth.token); 
     const [isAdmin, setIsAdmin] = useState(false);
+    const dispatch = useDispatch();
 
     useEffect(() => {
         if (token) {
@@ -19,7 +22,8 @@ const Dashboard = () => {
     }, [token]);
 
     const handleLogout = () => {
-        localStorage.removeItem('token');
+        // localStorage.removeItem('token');
+        token && dispatch({ type: 'REMOVE_TOKEN' });
         navigate('/');
     };
 
@@ -35,6 +39,24 @@ const Dashboard = () => {
         }
     }, [isAdmin, token]);
 
+
+
+const handleDelete = (userId) => {
+    if (isAdmin) {
+        axios.delete(`http://localhost:5000/deleteUser/${userId}`, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        })
+        .then(res => {
+            setUsers(users.filter(user => user._id !== userId));
+            console.log('User deleted successfully');
+        })
+        .catch(err => {
+            console.log(err);
+        });
+    }
+};
     return (
         <div className="dashboard-container">
             {isAdmin ? (
@@ -52,6 +74,7 @@ const Dashboard = () => {
                                 <th>Email</th>
                                 <th>Age</th>
                                 <th>Role</th>
+                                <th></th>
                             </tr>
                         </thead>
                         <tbody>
@@ -61,6 +84,10 @@ const Dashboard = () => {
                                     <td>{user.email}</td>
                                     <td>{user.age}</td>
                                     <td>{user.role}</td>
+                                    <td>
+                                    {user.role==='user' && 
+<i className="fas fa-trash-alt" style={{ color: 'red', cursor: 'pointer' }} onClick={() => handleDelete(user._id)}></i>}
+                                    </td>
                                 </tr>
                             ))}
                         </tbody>

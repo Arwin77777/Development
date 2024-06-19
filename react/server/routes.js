@@ -106,4 +106,21 @@ module.exports = function(app) {
             res.status(500).json({ error: "Error fetching user: " + error.message });
         }
     })
+
+    
+app.delete('/deleteUser/:userId', async (req, res) => {
+    try {
+        const userId = req.params.userId;
+        const token = req.headers.authorization.split(' ')[1];
+        const decoded = jwt.verify(token, "uwhi827");
+
+        await User.findByIdAndDelete(userId);
+        res.status(200).json({ message: "User deleted successfully" });
+    } catch (error) {
+        if (error.name === 'JsonWebTokenError') {
+            return res.status(401).json({ error: "Invalid token" });
+        }
+        res.status(500).json({ error: "Error deleting user: " + error.message });
+    }
+});
 };
